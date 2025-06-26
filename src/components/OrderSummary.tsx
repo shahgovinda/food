@@ -32,63 +32,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
     onHandlePayment,
     isLoading
 }) => {
-    // Slide to Pay state
-    const [slidePercent, setSlidePercent] = useState(0);
-    const [sliding, setSliding] = useState(false);
-    const [slideSuccess, setSlideSuccess] = useState(false);
-    const [showCheck, setShowCheck] = useState(false);
-    const sliderRef = useRef<HTMLDivElement>(null);
-    const handleRef = useRef<HTMLDivElement>(null);
-    const isCOD = paymentMode === 'cod';
-    const buttonText = isCOD ? 'Pay on Delivery' : 'Slide to Pay | ₹' + totalPrice.toFixed(0);
-    const slideText = buttonText;
     const { items } = useCartStore();
-
-    // Handle drag/touch events
-    const startSlide = (e: React.MouseEvent | React.TouchEvent) => {
-        if (isLoading) return;
-        setSliding(true);
-        setSlideSuccess(false);
-        document.body.style.userSelect = 'none';
-    };
-    const moveSlide = (e: React.MouseEvent | React.TouchEvent) => {
-        if (!sliding) return;
-        let clientX = 0;
-        if ('touches' in e) {
-            clientX = e.touches[0].clientX;
-        } else {
-            clientX = e.clientX;
-        }
-        const slider = sliderRef.current;
-        const handle = handleRef.current;
-        if (slider && handle) {
-            const rect = slider.getBoundingClientRect();
-            let percent = ((clientX - rect.left - handle.offsetWidth / 2) / (rect.width - handle.offsetWidth)) * 100;
-            percent = Math.max(0, Math.min(100, percent));
-            setSlidePercent(percent);
-        }
-    };
-    const endSlide = () => {
-        setSliding(false);
-        document.body.style.userSelect = '';
-        if (isLoading) return;
-        if (slidePercent > 85) {
-            setSlidePercent(100);
-            setShowCheck(true);
-            setTimeout(() => {
-                setSlideSuccess(true);
-                setTimeout(() => {
-                    setSlidePercent(0);
-                    setSlideSuccess(false);
-                    setShowCheck(false);
-                    if (!isLoading) onHandlePayment();
-                }, 900);
-            }, 350);
-        } else {
-            setSlidePercent(0);
-            setShowCheck(false);
-        }
-    };
 
     return (
         <motion.div
@@ -198,46 +142,14 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
                         Cash on Delivery
                     </Button>
                 </div>
-
-                {/* Slide to Pay Button (always show, text changes by payment mode) */}
-                <div
-                    ref={sliderRef}
-                    className="relative w-full h-14 bg-green-500 rounded-full flex items-center select-none overflow-hidden cursor-pointer"
-                    onMouseMove={moveSlide}
-                    onMouseUp={endSlide}
-                    onMouseLeave={endSlide}
-                    onTouchMove={moveSlide}
-                    onTouchEnd={endSlide}
+                {/* Professional Pay Button */}
+                <button
+                    className="w-full py-4 rounded-full bg-gray-900 hover:bg-gray-800 text-white font-bold text-lg shadow-lg transition-all duration-200 active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed"
+                    onClick={onHandlePayment}
+                    disabled={isLoading}
                 >
-                    {/* Slide Track */}
-                    <div
-                        className="absolute left-0 top-0 h-full bg-green-600 rounded-full transition-all duration-300"
-                        style={{ width: `${slidePercent}%`, opacity: slidePercent > 0 ? 0.15 : 0 }}
-                    />
-                    {/* Slide Text */}
-                    <span
-                        className={`absolute left-0 right-0 mx-auto text-white font-bold text-lg text-center transition-opacity duration-300 ${slideSuccess || showCheck ? 'opacity-0' : 'opacity-100'}`}
-                        style={{ zIndex: 1 }}
-                >
-                        {slideText}
-                    </span>
-                    {/* Slide Handle */}
-                    <div
-                        ref={handleRef}
-                        className={`absolute top-1 left-1 z-10 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center transition-transform duration-200 active:scale-95${sliding ? ' ring-4 ring-green-300' : ''} ${showCheck ? 'animate-pulse shadow-green-400' : ''} ${isLoading ? ' pointer-events-none opacity-50' : ''}`}
-                        style={{ transform: `translateX(${(sliderRef.current ? (slidePercent / 100) * (sliderRef.current.offsetWidth - 56) : 0)}px)` }}
-                        onMouseDown={isLoading ? undefined : startSlide}
-                        onTouchStart={isLoading ? undefined : startSlide}
-                    >
-                        <span className="text-green-600 text-2xl transition-all duration-300 flex items-center justify-center">
-                            {showCheck || slideSuccess ? (
-                                <Check size={32} className="text-green-600 transition-all duration-300" />
-                            ) : (
-                                <span className="text-green-600 text-2xl font-bold">&gt;&gt;</span>
-                            )}
-                        </span>
-                    </div>
-                </div>
+                    {paymentMode === 'cod' ? 'Pay on Delivery' : `Pay ₹${totalPrice.toFixed(0)}`}
+                </button>
             </div>
         </motion.div>
     );
