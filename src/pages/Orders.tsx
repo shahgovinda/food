@@ -101,6 +101,7 @@ const Orders = () => {
             orderId: ratingModal.orderId,
             rating,
             review,
+            userName: userDetails?.displayName || 'User', // <-- Added userName
         });
         // Mark as rated in this session
         setRatedItems(prev => ({ ...prev, [`${ratingModal.orderId}_${ratingModal.item.id}`]: true }));
