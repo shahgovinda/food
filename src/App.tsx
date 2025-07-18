@@ -9,8 +9,21 @@ import { BrandLogo } from "./components/Navbar"
 import { getSubdomain } from "./utils/getSubdomain"
 import { admin_router } from "./router/adminRouter"
 import { client_router } from "./router/clientRouter"
+import { useEffect } from "react";
 
 function App() {
+  useEffect(() => {
+    const handleContextMenu = (e) => {
+      if (e.target.tagName === "IMG") {
+        e.preventDefault();
+      }
+    };
+    document.addEventListener("contextmenu", handleContextMenu);
+    return () => {
+      document.removeEventListener("contextmenu", handleContextMenu);
+    };
+  }, []);
+
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: {
