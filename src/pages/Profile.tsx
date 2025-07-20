@@ -171,6 +171,7 @@ const Profile = () => {
         await deleteUserRating(deleteReviewId);
         setDeleteReviewId(null);
         fetchUserReviews();
+        toast.success('Review deleted successfully!');
     };
 
     if (!userDetails) {
@@ -246,10 +247,28 @@ const Profile = () => {
                     </div>
                 </section>
                 {/* Action Buttons */}
-                <section className='flex justify-center gap-4 mt-14'>
-                    <Button variant='primary' className='px-8 py-3 text-lg rounded-xl shadow-md' onClick={() => navigate('/orders')}>Go To Orders</Button>
-                    <Button variant='secondary' className='px-8 py-3 text-lg rounded-xl shadow-md' onClick={() => setShowReviews(true)}>Manage Reviews</Button>
-                    <Button variant='danger' className='px-8 py-3 text-lg rounded-xl shadow-md' onClick={() => setShowLogoutModal(true)}>Log Out</Button>
+                <section className='flex flex-col md:flex-row justify-center gap-3 md:gap-4 mt-14'>
+                    <Button
+                        variant='primary'
+                        className='w-full md:w-auto px-8 py-3 text-lg rounded-xl shadow-md bg-gradient-to-r from-orange-500 to-yellow-400 hover:from-yellow-400 hover:to-orange-500 transition-all duration-200 transform hover:scale-105 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2'
+                        onClick={() => navigate('/orders')}
+                    >
+                        Go To Orders
+                    </Button>
+                    <Button
+                        variant='secondary'
+                        className='w-full md:w-auto px-8 py-3 text-lg rounded-xl shadow-md bg-gradient-to-r from-purple-600 to-indigo-500 hover:from-indigo-500 hover:to-purple-600 text-white transition-all duration-200 transform hover:scale-105 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-2'
+                        onClick={() => setShowReviews(true)}
+                    >
+                        Manage Reviews
+                    </Button>
+                    <Button
+                        variant='danger'
+                        className='w-full md:w-auto px-8 py-3 text-lg rounded-xl shadow-md bg-gradient-to-r from-red-500 to-pink-500 hover:from-pink-500 hover:to-red-500 text-white transition-all duration-200 transform hover:scale-105 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2'
+                        onClick={() => setShowLogoutModal(true)}
+                    >
+                        Log Out
+                    </Button>
                 </section>
             </div>
             {/* Logout Confirmation Modal */}
@@ -284,24 +303,40 @@ const Profile = () => {
                 ) : userReviews.length === 0 ? (
                     <div className='py-8 text-center text-gray-500'>No reviews found.</div>
                 ) : (
-                    <div className='space-y-4 max-h-[60vh] overflow-y-auto'>
+                    <div className='space-y-6 max-h-[65vh] overflow-y-auto px-2 md:px-0'>
                         {userReviews.map((r) => (
-                            <div key={r.id} className='bg-gray-50 rounded-lg p-4 shadow flex flex-col md:flex-row md:items-center md:gap-6 gap-2'>
-                                <div className='flex-1'>
-                                    <div className='flex items-center gap-2 mb-1'>
-                                        <span className='font-semibold text-green-700'>{reviewProducts[r.itemId]?.productName || 'Food Item'}</span>
-                                        <span className='flex items-center gap-0.5 text-yellow-500'>
-                                            {[...Array(5)].map((_, i) => (
-                                                <Star key={i} size={16} fill={i < (r.rating ?? 0) ? 'currentColor' : 'none'} className={i < (r.rating ?? 0) ? 'text-yellow-400' : 'text-gray-300'} />
-                                            ))}
-                                        </span>
-                                        <span className='text-xs text-gray-400 ml-2'>{r.createdAt ? new Date(r.createdAt).toLocaleDateString() : ''}</span>
+                            <div key={r.id} className='bg-white rounded-2xl p-4 shadow-md flex flex-col gap-3 border border-gray-100'>
+                                <div className='flex flex-col md:flex-row md:items-center md:gap-6 gap-1'>
+                                    <div className='flex-1'>
+                                        <div className='flex flex-col md:flex-row md:items-center gap-1 md:gap-2 mb-1'>
+                                            <span className='font-semibold text-green-700 text-base md:text-lg'>{reviewProducts[r.itemId]?.productName || 'Food Item'}</span>
+                                            <span className='flex items-center gap-0.5 text-yellow-500'>
+                                                {[...Array(5)].map((_, i) => (
+                                                    <Star key={i} size={16} fill={i < (r.rating ?? 0) ? 'currentColor' : 'none'} className={i < (r.rating ?? 0) ? 'text-yellow-400' : 'text-gray-300'} />
+                                                ))}
+                                            </span>
+                                            <span className='text-xs text-gray-400 ml-0 md:ml-2'>{r.createdAt ? new Date(r.createdAt).toLocaleDateString() : ''}</span>
+                                        </div>
+                                        <div className='text-gray-700 text-sm md:text-base break-words'>{r.review}</div>
                                     </div>
-                                    <div className='text-gray-700 text-sm'>{r.review}</div>
                                 </div>
-                                <div className='flex gap-2 mt-2 md:mt-0'>
-                                    <Button variant='secondary' size='sm' onClick={() => setEditReview(r)}><Edit size={16} /> Edit</Button>
-                                    <Button variant='danger' size='sm' onClick={() => setDeleteReviewId(r.id)}><Trash2 size={16} /> Delete</Button>
+                                <div className='flex flex-col md:flex-row gap-2 md:gap-3 mt-2 w-full'>
+                                    <Button
+                                        variant='secondary'
+                                        size='sm'
+                                        className='w-full md:w-auto flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg shadow-sm transition-all duration-200 hover:scale-105'
+                                        onClick={() => setEditReview(r)}
+                                    >
+                                        <Edit size={16} /> Edit
+                                    </Button>
+                                    <Button
+                                        variant='danger'
+                                        size='sm'
+                                        className='w-full md:w-auto flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg shadow-sm transition-all duration-200 hover:scale-105'
+                                        onClick={() => setDeleteReviewId(r.id)}
+                                    >
+                                        <Trash2 size={16} /> Delete
+                                    </Button>
                                 </div>
                             </div>
                         ))}
@@ -329,6 +364,7 @@ const Profile = () => {
                     await updateUserRating(editReview.id, { rating, review });
                     setEditReview(null);
                     fetchUserReviews();
+                    toast.success('Review updated successfully!');
                 }}
             />
         </div>
