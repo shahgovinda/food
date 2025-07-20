@@ -235,18 +235,21 @@ const Orders = () => {
             <div className='w-full sm:max-w-3xl sm:px-5 sm:mx-auto px-2'>
                 <div className='flex flex-col sm:flex-row sm:justify-between sm:items-center items-start'>
                     <h1 className='text-2xl sm:text-4xl font-semibold lancelot py-5 sm:py-10 text-gray-700'>Past Orders</h1>
-                    <div className="relative group flex items-center mt-2 sm:mt-0">
-                        <button
-                            className='flex items-center justify-center p-1 rounded-full hover:bg-purple-100 transition-colors cursor-pointer'
-                            onClick={() => navigate('/contact')}
-                        >
-                            <Info size={22} className="text-[#2d014d] font-bold" />
-                        </button>
-                        <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs rounded-md px-3 py-1 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity shadow-lg whitespace-nowrap z-20">
-                            Need help?
-                        </div>
-                    </div>
+                    {/* Desktop: Prominent Need Help Button */}
+                    <button
+                        className='hidden sm:flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-600 text-white font-semibold shadow-md hover:bg-purple-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-2'
+                        onClick={() => navigate('/contact')}
+                    >
+                        <Info size={22} className='text-white' /> Need help?
+                    </button>
                 </div>
+                {/* Mobile: Full-width Need Help Button */}
+                <button
+                    className='flex sm:hidden w-full items-center justify-center gap-2 px-4 py-3 rounded-lg bg-purple-600 text-white font-semibold shadow-md hover:bg-purple-700 transition-all duration-200 mb-4 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-2'
+                    onClick={() => navigate('/contact')}
+                >
+                    <Info size={22} className='text-white' /> Need help?
+                </button>
                 {sortedOrders.length === 0 ? (
                     <div className='flex flex-col items-center gap-5 py-10 text-gray-500'>
                         <p>You have not placed any order yet.</p>
