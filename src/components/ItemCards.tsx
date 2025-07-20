@@ -91,7 +91,7 @@ type Review = {
     createdAt: string;
 };
 
-const ItemCards = ({ item }: { item: Item }) => {
+const ItemCards = ({ item, highlighted }: { item: Item, highlighted?: boolean }) => {
     // Add styles to the document head
     React.useEffect(() => {
         const styleSheet = document.createElement("style");
@@ -205,7 +205,10 @@ const ItemCards = ({ item }: { item: Item }) => {
 
     return (
         <>
-            <div className='md:flex flex-col justify-between hidden group w-64 lg:w-76 bg-white p-6 rounded-3xl shadow-xs cursor-pointer hover:bg-green-50 transition-color duration-500 border-orange-50 relative' >
+            <div
+                id={`shop-item-${item.id}`}
+                className={`md:flex flex-col justify-between hidden group w-64 lg:w-76 bg-white p-6 rounded-3xl shadow-xs cursor-pointer hover:bg-green-50 transition-color duration-500 border-orange-50 relative ${highlighted ? 'ring-4 ring-yellow-400 animate-pulse' : ''}`}
+            >
                 {/* Most Ordered Tag for Desktop */}
                 {(item.productName.toLowerCase().includes('combo') ||
                     item.productName.toLowerCase().includes('poori bhaji')) && (
