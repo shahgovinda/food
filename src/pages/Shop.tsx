@@ -33,6 +33,7 @@ const Shop = () => {
     const [mealOverlay, setMealOverlay] = useState(false);
     const swiperRef = useRef(null);
     const [animatedIndex, setAnimatedIndex] = useState(0);
+    const [highlightedItemId, setHighlightedItemId] = useState<string | null>(null);
 
     const products = useProductStore((state) => state.products);
     const items = useCartStore((state) => state.items);
@@ -103,6 +104,21 @@ const Shop = () => {
         }, 1700);
         return () => clearInterval(interval);
     }, []);
+
+    useEffect(() => {
+        // Scroll to item if itemId is present in URL
+        const itemId = searchParams.get('itemId');
+        if (itemId) {
+            setTimeout(() => {
+                const el = document.getElementById(`shop-item-${itemId}`);
+                if (el) {
+                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    setHighlightedItemId(itemId);
+                    setTimeout(() => setHighlightedItemId(null), 2000); // Remove highlight after 2s
+                }
+            }, 500); // Wait for items to render
+        }
+    }, [searchParams, products]);
 
     const handleMicClick = () => {
         if (isListening) {
@@ -493,7 +509,7 @@ const Shop = () => {
                                         exit={{ opacity: 0, y: -20 }}
                                         transition={{ duration: 0.3 }}
                                     >
-                                        <ItemCards key={item.id} item={item} />
+                                        <ItemCards key={item.id} item={item} highlighted={highlightedItemId === item.id} />
                                     </motion.div>
                                 ))}
                             </AnimatePresence>
