@@ -72,6 +72,7 @@ const Checkout = () => {
     const [isSavingNote, setIsSavingNote] = useState(false);
     const [noteSaved, setNoteSaved] = useState(!!note);
     const [isPlacingOrder, setIsPlacingOrder] = useState(false);
+    const [sendCutlery, setSendCutlery] = useState(note?.toLowerCase().includes('send cutlery'));
 
 
     // console.log(appliedVoucher);
@@ -111,6 +112,17 @@ const Checkout = () => {
         calculateTotalPrice(DELIVERY_PRICE, TAX_RATE);
     }, [items, grossTotalPrice, appliedVoucher, userDetails?.phoneNumber, calculateGrossTotalPrice, calculateTotalPrice]);
 
+    // Update note when sendCutlery changes
+    useEffect(() => {
+        let updatedNote = tempNote;
+        if (sendCutlery && !updatedNote.toLowerCase().includes('send cutlery')) {
+            updatedNote = updatedNote ? updatedNote + ' | Send cutlery' : 'Send cutlery';
+        } else if (!sendCutlery && updatedNote.toLowerCase().includes('send cutlery')) {
+            updatedNote = updatedNote.replace(/\s*\|?\s*send cutlery/i, '').trim();
+        }
+        setTempNote(updatedNote);
+        setNote(updatedNote);
+    }, [sendCutlery]);
 
 
     useEffect(() => window.scrollTo(0, 0), [])
@@ -340,23 +352,23 @@ const Checkout = () => {
                 <div className='grid grid-cols-1 lg:grid-cols-3 gap-8'>
                     <div className='lg:col-span-2 space-y-8'>
                         <CartSection items={items} updateItemQuantity={updateItemQuantity} />
-                        {/* Add Items & Cooking Requests Buttons */}
-                        <div className="flex gap-3 mb-2">
-                            <button
-                                onClick={() => navigate('/shop')}
-                                className="flex items-center gap-2 border border-gray-300 rounded-xl px-5 py-2 font-medium text-gray-700 bg-white hover:bg-gray-50 transition shadow-sm"
-                            >
-                                <span className="text-xl">+</span> Add Items
-                            </button>
-                            <button
-                                onClick={() => {
-                                    setShowInstructions(prev => !prev);
-                                    setTempNote(note || '');
-                                }}
-                                className="flex items-center gap-2 border border-gray-300 rounded-xl px-5 py-2 font-medium text-gray-700 bg-white hover:bg-gray-50 transition shadow-sm"
-                            >
-                                <PenBoxIcon className="w-5 h-5 text-gray-500" /> Cooking requests
-                            </button>
+                        {/* Add Items, Cooking requests, and Send cutlery in one row */}
+                        <div className="flex flex-row gap-2 items-center mb-4">
+                            <Button variant="secondary" onClick={() => navigate('/shop')}>
+                                + Add Items
+                            </Button>
+                            <Button variant="secondary" onClick={() => setShowInstructions(!showInstructions)}>
+                                Cooking requests
+                            </Button>
+                            <label className="flex items-center gap-2 cursor-pointer select-none text-sm font-medium">
+                                <input
+                                    type="checkbox"
+                                    checked={sendCutlery}
+                                    onChange={e => setSendCutlery(e.target.checked)}
+                                    className="accent-orange-500 w-4 h-4"
+                                />
+                                Send cutlery
+                            </label>
                         </div>
                         {/* Expandable Special Instructions */}
                         {showInstructions && (
