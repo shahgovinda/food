@@ -1,10 +1,10 @@
-import { Star, Triangle, X } from 'lucide-react'
+import { Star, Triangle, X, Heart, Share2 } from 'lucide-react'
 import { Item } from '../types/ItemsTypes'
 import { useCartStore } from '../store/cartStore'
 import { useAuthStore } from '../store/authStore'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Skeleton, Image } from '@heroui/react'
 import {
     Drawer,
@@ -18,6 +18,7 @@ import {
 import { getItemRatings, addItemRating } from '../services/productService';
 import { getDoc, doc } from 'firebase/firestore';
 import { db } from '../config/firebaseConfig';
+import { toast } from 'react-hot-toast';
 
 // Add keyframes for the glowing animation
 const glowingStyles = `
@@ -111,6 +112,40 @@ const ItemCards = ({ item, highlighted }: { item: Item, highlighted?: boolean })
     const [loadingReviews, setLoadingReviews] = useState(false);
     const [showAllReviews, setShowAllReviews] = useState(false);
     const [reviewFilter, setReviewFilter] = useState<number | null>(null);
+
+    // Like (favorite) logic
+    const [liked, setLiked] = useState(() => {
+        const likedItems = JSON.parse(localStorage.getItem('likedItems') || '[]');
+        return likedItems.includes(item.id);
+    });
+    useEffect(() => {
+        const handler = () => {
+            const likedItems = JSON.parse(localStorage.getItem('likedItems') || '[]');
+            setLiked(likedItems.includes(item.id));
+        };
+        window.addEventListener('likedItemsChanged', handler);
+        return () => window.removeEventListener('likedItemsChanged', handler);
+    }, [item.id]);
+    const toggleLike = () => {
+        let likedItems = JSON.parse(localStorage.getItem('likedItems') || '[]');
+        if (liked) {
+            likedItems = likedItems.filter((id: string) => id !== item.id);
+        } else {
+            likedItems.push(item.id);
+        }
+        localStorage.setItem('likedItems', JSON.stringify(likedItems));
+        setLiked(!liked);
+    };
+    // Share logic
+    const handleShare = () => {
+        const url = `${window.location.origin}/shop?itemId=${item.id}`;
+        if (navigator.share) {
+            navigator.share({ title: item.productName, url });
+        } else {
+            navigator.clipboard.writeText(url);
+            toast.success('Link copied!');
+        }
+    };
 
     const veg = (
         <div className='border-2 rounded-md border-green-700 flex items-center justify-center size-5 mb-1'>
@@ -209,6 +244,15 @@ const ItemCards = ({ item, highlighted }: { item: Item, highlighted?: boolean })
                 id={`shop-item-${item.id}`}
                 className={`md:flex flex-col justify-between hidden group w-64 lg:w-76 bg-white p-6 rounded-3xl shadow-xs cursor-pointer hover:bg-green-50 transition-color duration-500 border-orange-50 relative ${highlighted ? 'ring-4 ring-yellow-400 animate-pulse' : ''}`}
             >
+                {/* Like and Share Icons */}
+                <div className="absolute top-3 right-3 flex gap-2 z-20">
+                    <button onClick={toggleLike} className="p-1 rounded-full hover:bg-red-100 transition" title={liked ? 'Unlike' : 'Like'}>
+                        <Heart size={20} className={liked ? 'fill-red-500 text-red-500' : 'text-gray-400'} />
+                    </button>
+                    <button onClick={handleShare} className="p-1 rounded-full hover:bg-blue-100 transition" title="Share">
+                        <Share2 size={20} className="text-blue-500" />
+                    </button>
+                </div>
                 {/* Most Ordered Tag for Desktop */}
                 {(item.productName.toLowerCase().includes('combo') ||
                     item.productName.toLowerCase().includes('poori bhaji')) && (
@@ -299,6 +343,14 @@ const ItemCards = ({ item, highlighted }: { item: Item, highlighted?: boolean })
                             </div>
                         </motion.div>
                     )}
+                <div className="absolute top-3 right-3 flex gap-2 z-20">
+                    <button onClick={toggleLike} className="p-1 rounded-full hover:bg-red-100 transition" title={liked ? 'Unlike' : 'Like'}>
+                        <Heart size={20} className={liked ? 'fill-red-500 text-red-500' : 'text-gray-400'} />
+                    </button>
+                    <button onClick={handleShare} className="p-1 rounded-full hover:bg-blue-100 transition" title="Share">
+                        <Share2 size={20} className="text-blue-500" />
+                    </button>
+                </div>
                 <div className=' w-3/5'>
                     {item.isNonVeg ? nonVeg : veg}
                     <h4 className='lancelot text-2xl font-bold mb-2'>{item.productName}</h4>
