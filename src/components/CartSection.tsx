@@ -4,6 +4,7 @@ import Modal from './Modal';
 import { Trash } from 'lucide-react';
 import { CartItem } from '../types/CartTypes';
 import { useCartStore } from '../store/cartStore';
+import { useNavigate } from 'react-router-dom';
 
 interface CartSectionProps {
 	items: CartItem[];
@@ -14,6 +15,7 @@ const CartSection: React.FC<CartSectionProps> = ({ items, updateItemQuantity }) 
 	const [showClearCartConfirm, setShowClearCartConfirm] = useState(false);
 	const [itemToRemove, setItemToRemove] = useState<CartItem | null>(null);
 	const clearCart = useCartStore((state) => state.clearCart);
+	const navigate = useNavigate();
 
 	const handleClearCart = () => {
 		clearCart();
@@ -60,11 +62,17 @@ const CartSection: React.FC<CartSectionProps> = ({ items, updateItemQuantity }) 
 									exit={{ opacity: 0, x: -20, transition: { duration: 0.2 } }}
 									className="flex items-center gap-4 p-4 rounded-xl bg-gray-50"
 								>
-									<img
-										src={item.imageUrl}
-										alt={item.productName}
-										className="w-16 h-16 object-cover rounded-lg flex-shrink-0"
-									/>
+									<button
+										onClick={() => navigate(`/shop?itemId=${item.id}`)}
+										className="focus:outline-none"
+										title={`View details for ${item.productName}`}
+									>
+										<img
+											src={item.imageUrl}
+											alt={item.productName}
+											className="w-16 h-16 object-cover rounded-lg flex-shrink-0 hover:scale-105 transition-transform"
+										/>
+									</button>
 									<div className="flex-grow">
 										<h3 className="font-semibold text-gray-800">{item.productName}</h3>
 										<p className="text-gray-500">₹{Number(item.offerPrice).toFixed(2)}</p>
