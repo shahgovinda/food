@@ -1,4 +1,4 @@
-import { Menu, X, ShoppingCart, UserRound, MapPin, LogOut, AlertTriangle, Box, CircleHelp } from 'lucide-react'
+import { Menu, X, ShoppingCart, UserRound, MapPin, LogOut, AlertTriangle, Box, CircleHelp, Heart } from 'lucide-react'
 import Button, { IconButton } from './Button'
 import { useState, useEffect } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
@@ -9,6 +9,7 @@ import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@heroui/r
 import { useCartStore } from '../store/cartStore';
 import toast, { Toaster } from 'react-hot-toast';
 import Modal from './Modal';
+import { useProductStore } from '../store/productStore';
 
 export const BrandLogo = () => {
     const navigate = useNavigate();
@@ -23,11 +24,18 @@ export const BrandLogo = () => {
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false)
     const [showLogoutModal, setShowLogoutModal] = useState(false);
+    const [showLikedModal, setShowLikedModal] = useState(false);
     const location = useLocation();
     const user = useAuthStore((state) => state.user)
     const userDetails = useAuthStore((state) => state.userDetails)
     const items = useCartStore((state) => state.items);
     const navigate = useNavigate();
+    const products = useProductStore((state) => state.products);
+    const [likedItems, setLikedItems] = useState<string[]>([]);
+    const [confirmRemoveId, setConfirmRemoveId] = useState<string | null>(null);
+    const addItem = useCartStore((state) => state.addItem);
+    const cartItems = useCartStore((state) => state.items);
+    const updateQuantity = useCartStore((state) => state.updateQuantity);
 
     // Prevent background scrolling when menu is open
     useEffect(() => {
@@ -40,6 +48,19 @@ const Navbar = () => {
             document.body.style.overflow = 'unset'
         }
     }, [isOpen])
+
+    useEffect(() => {
+        const liked = JSON.parse(localStorage.getItem('likedItems') || '[]');
+        setLikedItems(liked);
+    }, [showLikedModal]);
+
+    const likedProducts = products.filter(p => likedItems.includes(p.id));
+
+    const removeLiked = (id: string) => {
+        const updated = likedItems.filter(itemId => itemId !== id);
+        setLikedItems(updated);
+        localStorage.setItem('likedItems', JSON.stringify(updated));
+    };
 
     // Function to handle navigation and close the mobile menu
     const handleNavigation = (path: string) => {
@@ -127,6 +148,14 @@ const Navbar = () => {
                                         </IconButton>
                                     </div>
                                 }
+                                {user && (
+    <button onClick={() => setShowLikedModal(true)} className="relative flex items-center justify-center p-2 rounded-full hover:bg-pink-100 transition">
+        <Heart size={22} className="text-pink-500" />
+        {likedItems.length > 0 && (
+            <span className="absolute -top-1 -right-1 bg-pink-500 text-white text-xs rounded-full px-1.5 py-0.5 min-w-[18px] text-center font-bold border-2 border-white">{likedItems.length}</span>
+        )}
+    </button>
+)}
                                 {user &&
                                     <Dropdown placement="bottom-end">
                                         <DropdownTrigger>
@@ -197,6 +226,9 @@ const Navbar = () => {
                                             <Link to="/contact" onClick={() => setIsOpen(false)} className={`text-lg `}>Contact Us</Link>
                                             <Link to="/concept" onClick={() => setIsOpen(false)} className={`text-lg `}>Concept</Link>
                                             <Link to="/terms-and-conditions" onClick={() => setIsOpen(false)} className={`text-lg `}>Terms and Conditions</Link>
+                                            <Link to="#" onClick={() => { setIsOpen(false); setShowLikedModal(true); }} className="text-lg flex items-center gap-2">
+    <Heart size={20} className="text-pink-500" /> Liked Food
+</Link>
                                         </nav>
                                         <div className="space-y-4 w-full">
 
@@ -220,6 +252,67 @@ const Navbar = () => {
                 onCancel={() => setShowLogoutModal(false)}
                 confirmLabel="Yes, Log Out"
                 cancelLabel="Cancel"
+            />
+
+            <Modal
+                isOpen={showLikedModal}
+                title="Liked Foods"
+                onCancel={() => setShowLikedModal(false)}
+                cancelLabel="Close"
+            >
+                {likedProducts.length === 0 ? (
+                    <div className="py-4 text-center text-gray-500">Your liked foods will appear here.</div>
+                ) : (
+                    <div className="grid gap-4 py-2 max-h-[60vh] overflow-y-auto">
+                        {likedProducts.map(item => {
+                            const cartItem = cartItems.find(ci => ci.id === item.id);
+                            const inCart = !!cartItem;
+                            return (
+                                <div key={item.id} className="flex items-center gap-4 bg-gray-50 rounded-xl p-3 shadow">
+                                    <img src={item.imageUrl} alt={item.productName} className="w-14 h-14 object-cover rounded-lg" />
+                                    <div className="flex-1">
+                                        <div className="font-semibold text-gray-800">{item.productName}</div>
+                                        <div className="text-green-700 font-bold">₹{item.offerPrice}</div>
+                                    </div>
+                                    <div className="flex flex-col gap-2 items-end">
+                                        <button onClick={() => setConfirmRemoveId(item.id)} className="text-red-500 hover:text-red-700 p-2 rounded-full">
+                                            Remove
+                                        </button>
+                                        {inCart ? (
+                                            <div className="flex items-center gap-2">
+                                                <button onClick={() => updateQuantity(item.id, cartItem.quantity - 1)} className="w-7 h-7 flex items-center justify-center rounded-full text-red-500 bg-red-100 hover:bg-red-200 font-bold text-lg">-</button>
+                                                <span className="min-w-[24px] text-center font-bold">{cartItem.quantity}</span>
+                                                <button onClick={() => updateQuantity(item.id, cartItem.quantity + 1)} className="w-7 h-7 flex items-center justify-center rounded-full text-green-600 bg-green-100 hover:bg-green-200 font-bold text-lg">+</button>
+                                            </div>
+                                        ) : (
+                                            <button onClick={() => { addItem(item); toast.success('Added to cart!'); }} className="text-white bg-orange-500 hover:bg-orange-600 px-3 py-1 rounded-lg text-sm font-semibold shadow">
+                                                Add to Cart
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                )}
+            </Modal>
+            <Modal
+                isOpen={!!confirmRemoveId}
+                title="Remove Liked Food?"
+                message="Are you sure you want to remove this item from your liked foods?"
+                confirmLabel="Remove"
+                cancelLabel="Cancel"
+                onConfirm={() => {
+                    if (confirmRemoveId) {
+                        const updated = likedItems.filter(itemId => itemId !== confirmRemoveId);
+                        setLikedItems(updated);
+                        localStorage.setItem('likedItems', JSON.stringify(updated));
+                        // Dispatch a custom event so ItemCards can update
+                        window.dispatchEvent(new CustomEvent('likedItemsChanged'));
+                    }
+                    setConfirmRemoveId(null);
+                }}
+                onCancel={() => setConfirmRemoveId(null)}
             />
 
             <Toaster />
