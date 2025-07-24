@@ -246,7 +246,7 @@ const Shop = () => {
         <div className='bg-[#fff9f2] flex'>
             <div className='container mx-auto'>
                 {/* --- Image Slider Section --- */}
-                <section className="w-full py-4 flex items-center justify-center">
+                {/* <section className="w-full py-4 flex items-center justify-center">
                   <div className="w-full max-w-4xl px-2 sm:px-6">
                     <Swiper
                       modules={[Autoplay, Pagination]}
@@ -258,7 +258,7 @@ const Shop = () => {
                       className="rounded-2xl shadow-xl"
                       onSwiper={swiper => (swiperRef.current = swiper)}
                     >
-                      {/* Authentic Indian Thali Slide */}
+                      
                       <SwiperSlide>
                         <div
                           className="relative w-full h-[160px] sm:h-[240px] md:h-[300px] bg-gray-100 rounded-2xl flex items-center justify-center group select-none"
@@ -266,23 +266,23 @@ const Shop = () => {
                           onMouseLeave={() => { setThaliOverlay(false); resumeSwiper(); }}
                           onClick={() => handleMobileOverlay('thali')}
                         >
-                          {/* Today's Menu Badge */}
+                          
                           <div className="absolute top-3 left-3 z-10 bg-orange-500 text-white text-xs sm:text-sm font-semibold px-3 py-1 rounded-full shadow-md">Today's Menu</div>
-                          {/* Image with hover/click blur */}
+                         
                           <img src="/indian-plate.png" alt="Indian Plate" className={`w-full h-full object-contain rounded-2xl transition duration-300 ${thaliOverlay ? 'blur-sm' : ''}`} />
-                          {/* Overlay for sabji info */}
+                          
                           {thaliOverlay && (
                             <div className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-2xl z-20">
                               <span className="text-white text-base sm:text-lg font-semibold text-center px-4 py-2 rounded-lg bg-black/50 shadow-lg">Sabji: Bhindi Aalu / Chana Masala, Aalu Bhujiya / Chola</span>
                             </div>
                           )}
-                          {/* Caption (hide on overlay) */}
+                          
                           <div className={`absolute bottom-0 left-0 w-full h-1/3 bg-gradient-to-t from-black/60 to-transparent rounded-b-2xl flex items-end p-4 transition-opacity duration-300 ${thaliOverlay ? 'opacity-0' : 'opacity-100'}`}>
                             <span className="text-white text-lg font-semibold drop-shadow-md">Authentic Indian Thali</span>
                           </div>
                         </div>
                       </SwiperSlide>
-                      {/* Nutritious Homestyle Meals Slide */}
+                     
                       <SwiperSlide>
                         <div
                           className="relative w-full h-[160px] sm:h-[240px] md:h-[300px] bg-gray-100 rounded-2xl flex items-center justify-center group select-none"
@@ -290,17 +290,17 @@ const Shop = () => {
                           onMouseLeave={() => { setMealOverlay(false); resumeSwiper(); }}
                           onClick={() => handleMobileOverlay('meal')}
                         >
-                          {/* Today's Menu Badge */}
+                         
                           <div className="absolute top-3 left-3 z-10 bg-orange-500 text-white text-xs sm:text-sm font-semibold px-3 py-1 rounded-full shadow-md">Today's Menu</div>
-                          {/* Image with hover/click blur */}
+                         
                           <img src="/meal.jpg" alt="Meal" className={`w-full h-full object-contain rounded-2xl transition duration-300 ${mealOverlay ? 'blur-sm' : ''}`} />
-                          {/* Overlay for sabji info */}
+                          
                           {mealOverlay && (
                             <div className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-2xl z-20">
                               <span className="text-white text-base sm:text-lg font-semibold text-center px-4 py-2 rounded-lg bg-black/50 shadow-lg">Sabji: Bhindi Aalu / Chana Masala, Aalu Bhujiya / Chola</span>
                             </div>
                           )}
-                          {/* Caption and Sabji text (non-hover) */}
+                         
                           <div className={`absolute bottom-0 left-0 w-full h-1/3 bg-gradient-to-t from-black/60 to-transparent rounded-b-2xl flex items-end p-4 transition-opacity duration-300 ${mealOverlay ? 'opacity-0' : 'opacity-100'}`}>
                             <span className="text-white text-lg font-semibold drop-shadow-md">Nutritious Homestyle Meals</span>
                             <span className="ml-auto text-white text-base font-medium drop-shadow-md hidden sm:inline-block">Sabji: Aalu Bhindi ..</span>
@@ -309,7 +309,7 @@ const Shop = () => {
                       </SwiperSlide>
                       <SwiperSlide>
                         <div className="relative w-full h-[160px] sm:h-[240px] md:h-[300px] bg-gray-100 rounded-2xl flex items-center justify-center group select-none">
-                          {/* Sunday Special Badge */}
+                       
                           <div className="absolute top-3 left-3 z-10 bg-red-500 text-white text-xs sm:text-sm font-semibold px-3 py-1 rounded-full shadow-md">Sunday Special</div>
                           <img src="/egg.jpg" alt="Egg Curry Rice" className="w-full h-full object-contain rounded-2xl" />
                           <div className="absolute bottom-0 left-0 w-full h-1/3 bg-gradient-to-t from-black/60 to-transparent rounded-b-2xl flex items-end p-4">
@@ -319,7 +319,7 @@ const Shop = () => {
                       </SwiperSlide>
                       <SwiperSlide>
                         <div className="relative w-full h-[160px] sm:h-[240px] md:h-[300px] bg-gray-100 rounded-2xl flex items-center justify-center">
-                          {/* Today's Menu Badge */}
+                         
                           <div className="absolute top-3 left-3 z-10 bg-orange-500 text-white text-xs sm:text-sm font-semibold px-3 py-1 rounded-full shadow-md">Today's Menu</div>
                           <img src="/pb.jpg" alt="Pav Bhaji" className="w-full h-full object-contain rounded-2xl" />
                           <div className="absolute bottom-0 left-0 w-full h-1/3 bg-gradient-to-t from-black/60 to-transparent rounded-b-2xl flex items-end p-4">
@@ -329,7 +329,7 @@ const Shop = () => {
                       </SwiperSlide>
                     </Swiper>
                   </div>
-                </section>
+                </section> */}
                 <div className='py-10'>
                     {/* Search Bar */}
                     <div className="flex justify-center mb-4 px-4">
