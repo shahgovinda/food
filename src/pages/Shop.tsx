@@ -498,7 +498,7 @@ const Shop = () => {
                     )}
 
                     {getFilteredProducts()?.length > 0 ?
-                        <div className="flex flex-wrap justify-center gap-6 px-4 mt-8">
+                        <div className="flex flex-col md:flex-row flex-wrap justify-center gap-6 px-4 mt-8">
                             <AnimatePresence>
                                 {getFilteredProducts()?.map(item => (
                                     <motion.div
